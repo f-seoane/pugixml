@@ -8921,11 +8921,41 @@ PUGI_IMPL_NS_BEGIN
 		// parse integer part
 		while (PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) ++string;
 
+		// scientific notation no decimal part
+		if (*string == 'e' || *string == 'E')
+		{
+			++string;
+
+			// parse exponent sign
+			if (*string == '+' || *string == '-') ++string;
+
+			// there should be at least one digit in exponent
+			if (!PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) return false;
+
+			// parse exponent digits
+			while (PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) ++string;
+		}
+
 		// parse decimal part
 		if (*string == '.')
 		{
 			++string;
 
+			while (PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) ++string;
+		}
+
+		// scientific notation with decimal part
+		if (*string == 'e' || *string == 'E')
+		{
+			++string;
+
+			// parse exponent sign
+			if (*string == '+' || *string == '-') ++string;
+
+			// there should be at least one digit in exponent
+			if (!PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) return false;
+
+			// parse exponent digits
 			while (PUGI_IMPL_IS_CHARTYPEX(*string, ctx_digit)) ++string;
 		}
 
@@ -9821,6 +9851,14 @@ PUGI_IMPL_NS_BEGIN
 
 					while (PUGI_IMPL_IS_CHARTYPEX(*cur, ctx_digit)) cur++;
 
+					// Scientific notation support
+					if (*cur == 'e' || *cur == 'E')
+					{
+						cur++;
+						if (*cur == '+' || *cur == '-') cur++;
+						while (PUGI_IMPL_IS_CHARTYPEX(*cur, ctx_digit)) cur++;
+					}
+
 					_cur_lexeme_contents.end = cur;
 
 					_cur_lexeme = lex_number;
@@ -9883,6 +9921,14 @@ PUGI_IMPL_NS_BEGIN
 					{
 						cur++;
 
+						while (PUGI_IMPL_IS_CHARTYPEX(*cur, ctx_digit)) cur++;
+					}
+
+					// Scientific notation support
+					if (*cur == 'e' || *cur == 'E')
+					{
+						cur++;
+						if (*cur == '+' || *cur == '-') cur++;
 						while (PUGI_IMPL_IS_CHARTYPEX(*cur, ctx_digit)) cur++;
 					}
 

@@ -32,6 +32,13 @@ TEST(xpath_number_parse)
 	CHECK_XPATH_NUMBER(c, STR(".123"), 0.123);
 	CHECK_XPATH_NUMBER(c, STR("123.4567890123456789012345"), 123.4567890123456789012345);
 	CHECK_XPATH_NUMBER(c, STR("123."), 123);
+	CHECK_XPATH_NUMBER(c, STR("number(-2.5E-2)"), -2.5E-2);
+	CHECK_XPATH_NUMBER(c, STR("-2.5E-2"), -2.5E-2);
+	CHECK_XPATH_NUMBER(c, STR("3.0e+5"), 3.0e+5);
+	CHECK_XPATH_NUMBER(c, STR("3.0e-5"), 3.0e-5);
+	CHECK_XPATH_NUMBER(c, STR("7.2e0"), 7.2e0);
+	CHECK_XPATH_NUMBER(c, STR("1e3"), 1e3);
+	CHECK_XPATH_NUMBER(c, STR("1.e3"), 1e3);
 }
 
 TEST(xpath_number_error)
@@ -376,7 +383,7 @@ TEST(xpath_parse_oom_propagation)
 	{
 		std::basic_string<char_t> literal(i, 'a');
 		std::basic_string<char_t> query = STR("processing-instruction('") + literal + STR("') | ") + query_base;
-		
+
 		CHECK_ALLOC_FAIL(CHECK_XPATH_FAIL(query.c_str()));
 	}
 }
